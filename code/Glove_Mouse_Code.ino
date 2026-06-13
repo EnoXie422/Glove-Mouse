@@ -36,9 +36,12 @@ int calibrationCounter = 0,
 float xRange[] = {0,0};
 float yRange[] = {0,0};
 
-const int MOUSE_LEFT_PIN = 10,
-          MOUSE_RIGHT_PIN = 6,
-          MOUSE_MID_PIN   = 8;
+// MPR121 electrode indices (0-11), NOT Arduino digital pins.
+// Each value identifies which of the MPR121's 12 capacitive touch
+// electrodes is wired to the left / right / middle "button" pad.
+const int MOUSE_LEFT_ELECTRODE  = 10,
+          MOUSE_RIGHT_ELECTRODE = 6,
+          MOUSE_MID_ELECTRODE   = 8;
     
 uint16_t lasttouched = 0,
          currtouched = 0;
@@ -67,8 +70,10 @@ void configureSensor(void) {
 
 
 void setup(void) {
-  if (DEBUG) Serial.begin(9600);
-  
+  if (DEBUG) {
+    Serial.begin(9600);
+  }
+
   dof_setup();
   mpr_setup();
 }
@@ -83,12 +88,17 @@ void loop(void) {
 void mpr_setup() {
   // needed to keep leonardo/micro from starting too fast!
   while (!Serial);
-  if (DEBUG) Serial.begin(9600); Serial.println("Adafruit MPR121 Capacitive Touch sensor test"); 
-  
+  if (DEBUG) {
+    Serial.println("Adafruit MPR121 Capacitive Touch sensor test");
+  }
+
   // Default address is 0x5A, if tied to 3.3V its 0x5B
   // If tied to SDA its 0x5C and if SCL then 0x5D
-  if (!cap.begin(0x5A))  if (DEBUG) Serial.println("MPR121 not found");
-  else                   if (DEBUG) Serial.println("MPR121 found!");
+  if (!cap.begin(0x5A)) {
+    if (DEBUG) Serial.println("MPR121 not found");
+  } else {
+    if (DEBUG) Serial.println("MPR121 found!");
+  }
 }
 
 
@@ -109,11 +119,11 @@ void dof_loop() {
   sensors_event_t accel, mag, gyro, temp;
   lsm.getEvent(&accel, &mag, &gyro, &temp);
 
-  float mx, my = 0.0;
+  float mx = 0.0, my = 0.0;
   float accelX = clamp(accel.acceleration.x, accelMin, accelMax);
   float accelY = clamp(accel.acceleration.y, accelMin, accelMax);
 
-  // calibrate for the first five loops
+  // calibrate for the first 20 loops (calibrationRuns)
   if (calibrationCounter > calibrationRuns) {
   
     if (accel.acceleration.x < xRange[0] || accel.acceleration.x > xRange[1]) {
@@ -187,18 +197,27 @@ void calibrate(float x, float y) {
 
 
 void touchHandler(int id) {
-  
+
   switch(id) {
-    case MOUSE_LEFT_PIN:
-      if (DEBUG) Serial.println("Left button touched"); Serial.println("");
+    case MOUSE_LEFT_ELECTRODE:
+      if (DEBUG) {
+        Serial.println("Left button touched");
+        Serial.println("");
+      }
       Mouse.press(MOUSE_LEFT);
       break;
-    case MOUSE_MID_PIN:
-      if (DEBUG) Serial.println("Middle button touched"); Serial.println("");
+    case MOUSE_MID_ELECTRODE:
+      if (DEBUG) {
+        Serial.println("Middle button touched");
+        Serial.println("");
+      }
       Mouse.press(MOUSE_MIDDLE);
       break;
-    case MOUSE_RIGHT_PIN:
-      if (DEBUG) Serial.println("Right button touched"); Serial.println("");
+    case MOUSE_RIGHT_ELECTRODE:
+      if (DEBUG) {
+        Serial.println("Right button touched");
+        Serial.println("");
+      }
       Mouse.press(MOUSE_RIGHT);
       break;
   }
@@ -206,18 +225,27 @@ void touchHandler(int id) {
 
 
 void releaseHandler(int id) {
-    
+
   switch(id) {
-    case MOUSE_LEFT_PIN:
-      if (DEBUG) Serial.println("Left button released"); Serial.println("");
+    case MOUSE_LEFT_ELECTRODE:
+      if (DEBUG) {
+        Serial.println("Left button released");
+        Serial.println("");
+      }
       Mouse.release(MOUSE_LEFT);
       break;
-    case MOUSE_MID_PIN:
-      if (DEBUG) Serial.println("Middle button released"); Serial.println("");
+    case MOUSE_MID_ELECTRODE:
+      if (DEBUG) {
+        Serial.println("Middle button released");
+        Serial.println("");
+      }
       Mouse.release(MOUSE_MIDDLE);
       break;
-    case MOUSE_RIGHT_PIN:
-      if (DEBUG) Serial.println("Right button released"); Serial.println("");
+    case MOUSE_RIGHT_ELECTRODE:
+      if (DEBUG) {
+        Serial.println("Right button released");
+        Serial.println("");
+      }
       Mouse.release(MOUSE_RIGHT);
       break;
   }
@@ -243,3 +271,6 @@ void displaySensorDetails(int delayAmt) {
     Serial.print  (F("Resolution:   ")); Serial.print(accel.resolution); Serial.println(F(" m/s^2"));
     Serial.println(F("------------------------------------"));
     Serial.println(F(""));
+  }
+  delay(delayAmt);
+}
