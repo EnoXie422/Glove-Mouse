@@ -1,1 +1,1 @@
-Place your demo.mp4 video file in this folder before pushing to GitHub.
+This is the demonstration video demo.mp4.
