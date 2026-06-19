@@ -111,6 +111,10 @@ BSAS BEIE, Macau University of Science and Technology · December 2024
 
 Released under the [MIT License](LICENSE). The project may be reused freely for academic and personal purposes; please cite the authors if it influences your work.
 
+## Acknowledgments
+
+This project was developed as a course assignment based on the open-source Instructables tutorial [*Gesture Mouse — Controlling Computer With a Glove*](https://www.instructables.com/Gesture-Mouse-Controling-Computer-With-a-Glove/). The reference implementation provided the initial firmware skeleton (sensor initialization, calibration loop, and HID dispatch). Our work adapted the design to a different hardware build, restructured the code, fixed several bugs (uninitialized cursor delta, malformed `DEBUG` guards, missing function terminator), renamed misleading constants, and documented the system in a full project report.
+
 ## References
 
 1. Han, H., & Yoon, S. W. (2019). *Gyroscope-Based Continuous Human Hand Gesture Recognition for Multi-Modal Wearable Input Device for Human Machine Interaction.* **Sensors, 19(11), 2562.** [doi:10.3390/s19112562](https://doi.org/10.3390/s19112562)
